@@ -9,7 +9,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
-import Divider from '@mui/material/Divider';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import InsightsIcon from '@mui/icons-material/Insights';
 import SearchIcon from '@mui/icons-material/Search';
@@ -473,40 +472,6 @@ function LoginPage() {
             >
               {loading ? 'Signing in…' : 'Sign In'}
             </Button>
-          </Box>
-
-          {/* Divider */}
-          <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.08)' }}>
-            <Typography
-              sx={{
-                px: 1.5,
-                fontSize: '0.7rem',
-                color: 'rgba(255,255,255,0.35)',
-                letterSpacing: '0.1em',
-              }}
-            >
-              DEMO ACCESS
-            </Typography>
-          </Divider>
-
-          {/* Demo Credentials */}
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              bgcolor: 'rgba(232,163,61,0.06)',
-              border: '1px dashed rgba(232,163,61,0.25)',
-              textAlign: 'center',
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}
-            >
-              Username: <strong style={{ color: '#E8A33D' }}>admin</strong>
-              {'  ·  '}
-              Password: <strong style={{ color: '#E8A33D' }}>admin123</strong>
-            </Typography>
           </Box>
         </Box>
       </Box>
