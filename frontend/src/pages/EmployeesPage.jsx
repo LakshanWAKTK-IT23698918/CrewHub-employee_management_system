@@ -3,6 +3,8 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee, exportEmployeesCsv } from '../api/employeeApi';
 import SearchBar from '../components/SearchBar';
@@ -60,8 +62,7 @@ function EmployeesPage() {
     return () => clearTimeout(timeoutId);
   }, [searchInput]);
 
-  // Reset to first page whenever the debounced search term changes, so a new
-  // search never leaves the user stranded on a page that no longer exists.
+  // Reset to first page whenever the debounced search term changes
   useEffect(() => {
     setPaginationModel((prev) => (prev.page === 0 ? prev : { ...prev, page: 0 }));
   }, [searchDebounced]);
@@ -123,8 +124,6 @@ function EmployeesPage() {
         await fetchEmployees();
         setStatsRefreshKey((prev) => prev + 1);
       } catch (error) {
-        // Re-throw so EmployeeForm's `finally` re-enables the submit button;
-        // the dialog stays open (per spec) and the user sees the error toast.
         showSnackbar(error.message || 'Failed to save employee.', 'error');
         throw error;
       }
@@ -150,10 +149,6 @@ function EmployeesPage() {
       showSnackbar('Employee deleted successfully.', 'success');
       setStatsRefreshKey((prev) => prev + 1);
 
-      // If we just deleted the last remaining row on a page beyond the first,
-      // step back a page so the table doesn't show an empty page. Stepping
-      // back updates paginationModel, which triggers fetchEmployees via the
-      // effect above — so we only need to fetch explicitly in the other case.
       const isLastRowOnPage = employees.length === 1;
       const isNotFirstPage = paginationModel.page > 0;
 
@@ -187,14 +182,88 @@ function EmployeesPage() {
   }, [searchDebounced, showSnackbar]);
 
   return (
-    <Box>
-      <AnalyticsCards refreshKey={statsRefreshKey} />
+    <Box sx={{ position: 'relative' }}>
+      {/* ==================== PAGE HEADER ==================== */}
+      <Box
+        sx={{
+          mb: 4,
+          pb: 3,
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          spacing={2}
+        >
+          <Box>
+            <Typography
+              sx={{
+                fontFamily: '"Space Grotesk", sans-serif',
+                fontWeight: 700,
+                fontSize: { xs: '1.5rem', md: '1.85rem' },
+                letterSpacing: '-0.02em',
+                color: '#ffffff',
+                mb: 0.5,
+              }}
+            >
+              Employee Directory
+            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Box
+                sx={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  bgcolor: '#10B981',
+                  boxShadow: '0 0 8px #10B981',
+                }}
+              />
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                {totalCount} {totalCount === 1 ? 'employee' : 'employees'} in your organization
+              </Typography>
+            </Stack>
+          </Box>
+        </Stack>
+      </Box>
 
-      <Paper elevation={0} sx={{ p: 2, mb: 2 }}>
+      {/* ==================== ANALYTICS CARDS ==================== */}
+      <Box sx={{ mb: 4 }}>
+        <AnalyticsCards refreshKey={statsRefreshKey} />
+      </Box>
+
+      {/* ==================== SEARCH BAR ==================== */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2.5,
+          mb: 3,
+          borderRadius: 3,
+          bgcolor: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(20px)',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            borderColor: 'rgba(232,163,61,0.2)',
+          },
+        }}
+      >
         <SearchBar value={searchInput} onChange={setSearchInput} onClear={handleClearSearch} />
       </Paper>
 
-      <Paper elevation={0} sx={{ p: 2 }}>
+      {/* ==================== EMPLOYEE TABLE ==================== */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 1.5, sm: 2.5 },
+          borderRadius: 3,
+          bgcolor: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(20px)',
+          overflow: 'hidden',
+        }}
+      >
         <EmployeeTable
           rows={employees}
           loading={loading}
@@ -211,6 +280,7 @@ function EmployeesPage() {
         />
       </Paper>
 
+      {/* ==================== DIALOGS ==================== */}
       <EmployeeForm
         open={dialogOpen}
         initialValues={editingEmployee}
@@ -226,13 +296,23 @@ function EmployeesPage() {
         loading={deleteLoading}
       />
 
+      {/* ==================== SNACKBAR ==================== */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={closeSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={closeSnackbar} severity={snackbar.severity} variant="filled">
+        <Alert
+          onClose={closeSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{
+            borderRadius: 2,
+            fontWeight: 500,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+          }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>
